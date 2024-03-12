@@ -6,90 +6,41 @@ import * as fal from "@fal-ai/serverless-client";
 global.Buffer = Buffer;
 
 function WebcamCapture() {
-  const webcamRef = React.useRef(null);
-  const prompt = useRef(null);
+  const webcamRef = useRef(null);
+  const prompt = useRef(""); // Initialize prompt ref with an empty string
 
-  const [image, setImage] = useState(null);
-  const [index, setIndex] = useState(0);
-
-  const prompts = [
-
-    // PERFORMANCE
-    "abstract flowers, Fauvist Matisse painting",
-    "abstract flowers, monet water lillies painting",
-    "abstract flowers, saturn's rings around the petals",
-    "abstract flowers, georgia o'keeffe painting",
-    "flowers, colorful Angular Cubist picasso painting",
-    "abstract flowers in the surrealist style of dali",
-    "flower field on the floor of the sagrada familia with colorful stained glass windows",
-
-
-    // PASSIVE
-    // paintings
-    "colorful angular cubist picasso painting",
-    "crying girl (1963), speech bubble, comic book style painting by lichtenstein",
-    "multicolored marilyn monroe painting by Andy Warhol",
-    "radiant baby by keith haring, blue and orange",
-    "abstract mondrian painting",
-    "Japanese Landscape, Edo Period, Woodblock, Hokusai, Ocean",
-    "Pink Cherry Blossom Trees, Japanese Landscape, Edo Period, Woodblock, Hokusai",
-    "starry night sky, van gogh",
-
-    // places
-    "sunday mass in the sagrada familia with colorful stained glass windows",   
-    "the metropolitan museum of art",
-    "garden of eden",
-    "palace of fine arts in san francisco",
-    "washington square park, new york",
-    "central park, new york",
-    "colorful planets with saturn's rings in empty black space",
-    "the earth",
-    "black hole",
-
-    // characters
-    "2001: a space odyssey",
-    "star wars stormtroopers",
-    "cyberpunk underground neon party",
-    "anime",
-    "lofi girl, hip hop beats to study to",
-    "animal crossing",
-    "lego person",
-    "8-bit, pixelated",
-    "pikachu",
-    "shrek",
-    "founding fathers",
-    "roman statue",
-
-
-
-    // characters
-
-    // "the last supper",
-    // "colorful planets with saturn's rings in empty black space",
-    // "constellations in the night sky that are in the shape of people",
-    // "lofi hip hop beats to study to girl", // not explicit enough
-    // "japanese multipanel painting",
-    // "surrealist dali painting", // kinda cool
-
-    // backup
-        // "laniakea supercluster",
-            // "coachella",
-    // "the fall of rome, the course of empire painting",
-
-
-  ];
+  const [image, setImage] = useState(null); // Assuming you'll use this for something else
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prevIndex) => (prevIndex + 1) % prompts.length);
-    }, 10000); // Change every 20 seconds
+    // Speech recognition setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true; // Keep listening continuously
+      recognition.interimResults = true; // Report results that are not yet final
 
-    return () => clearInterval(interval); // Clean up on unmount
-  }, [prompts.length]);
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join('');
+        if (event.results[0].isFinal) {
+          prompt.current = transcript; // Update the prompt with the final transcript
+          console.log("New prompt: ", prompt.current);
+        }
+      };
 
-  useEffect(() => {
-    prompt.current = prompts[index];
-  }, [index, prompts]);
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+      };
+
+      recognition.start();
+
+      // Cleanup function to stop speech recognition
+      return () => recognition.stop();
+    } else {
+      console.log("Speech recognition not supported in this browser.");
+    }
+  }, []); // Empty dependency array means this effect runs once on mount
 
   fal.config({
     // Can also be auto-configured using environment variables:
@@ -133,10 +84,7 @@ function WebcamCapture() {
   
   console.log(image)
 
-  // Function to handle the next prompt
-  const handleNextPrompt = () => {
-    setIndex((prevIndex) => (prevIndex + 1) % prompts.length);
-  };
+
 
   return(
     <div style={{display: "flex", flexDirection: "column", alignItems: "center", height: "100vh", backgroundColor: "white"}}>
@@ -153,14 +101,11 @@ function WebcamCapture() {
         videoConstraints={{width: 512, height: 512}} 
         screenshotFormat="image/jpeg"
         style={{width: "15vh", height: "15vh", position: "absolute", top: 20, right: 40, zIndex: 2,
-        border: '3px solid white', borderRadius: '10px'}} 
+        border: '3px solid white', borderRadius: '10px', visibility:"hidden"}} 
       />
-      <div style={{position: "absolute", top: "calc(20px + 20vh)", right: 40, zIndex: 2, color: "white", fontSize: "20px"}}>
+      <div style={{position: "absolute", bottom: 50, left: "50%", transform: "translateX(-50%)", zIndex: 2, fontSize: "20px",}}>
         {prompt.current}
       </div>
-      <button onClick={handleNextPrompt} style={{position: "absolute", top: "calc(20px + 25vh)", right: 40, zIndex: 2, padding: '10px 20px', fontSize: '16px', borderRadius: '5px', cursor: 'pointer'}}>
-        Next Prompt
-      </button>
     </div>
   );
 }
