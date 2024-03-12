@@ -120,7 +120,7 @@ function WebcamCapture() {
         style={{width: "15vh", height: "15vh", position: "absolute", top: 20, right: 40, zIndex: 2,
         border: '3px solid white', borderRadius: '10px', visibility:"hidden"}} 
       />
-      <div style={{position: "absolute", bottom: 50, left: "50%", transform: "translateX(-50%)", zIndex: 2, fontSize: "20px",}}>
+      <div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 2, fontSize: "20px",}}>
         {prompt.current}
       </div>
     </div>
