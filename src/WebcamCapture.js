@@ -8,24 +8,26 @@ global.Buffer = Buffer;
 function WebcamCapture() {
   const webcamRef = useRef(null);
   const prompt = useRef(""); // Initialize prompt ref with an empty string
-
-  const [image, setImage] = useState(null); // Assuming you'll use this for something else
+  const [image, setImage] = useState(null);
+  const [reset, setReset] = useState(false); // State to trigger reset
 
   useEffect(() => {
-    // Speech recognition setup
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.continuous = true; // Keep listening continuously
-      recognition.interimResults = true; // Report results that are not yet final
+      recognition.continuous = true;
+      recognition.interimResults = true;
 
       recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0].transcript)
-          .join('');
-        if (event.results[0].isFinal) {
-          prompt.current = transcript; // Update the prompt with the final transcript
-          console.log("New prompt: ", prompt.current);
+        // Only update prompt if not in reset state
+        if (!reset) {
+          const transcript = Array.from(event.results)
+            .map(result => result[0].transcript)
+            .join('');
+          if (event.results[0].isFinal) {
+            prompt.current = transcript;
+            console.log("New prompt: ", prompt.current);
+          }
         }
       };
 
@@ -35,12 +37,27 @@ function WebcamCapture() {
 
       recognition.start();
 
-      // Cleanup function to stop speech recognition
       return () => recognition.stop();
     } else {
       console.log("Speech recognition not supported in this browser.");
     }
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, [reset]); // Re-initialize speech recognition when reset state changes
+
+  useEffect(() => {
+    // Function to handle keydown events
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter") {
+        prompt.current = ""; // Reset the prompt
+        setReset(true); // Indicate reset state
+        setTimeout(() => setReset(false), 100); // Briefly set reset to true to re-initialize speech recognition
+        console.log("Prompt reset.");
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   fal.config({
     // Can also be auto-configured using environment variables:
@@ -68,7 +85,7 @@ function WebcamCapture() {
       connection.send({
         image_url: imageSrc,
         prompt: prompt.current,
-        strength: 0.7,
+        strength: 0.5,
         guidance_scale: 1,
         seed: 42,
         num_inference_steps: 3,
