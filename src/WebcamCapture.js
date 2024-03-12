@@ -85,7 +85,7 @@ function WebcamCapture() {
       connection.send({
         image_url: imageSrc,
         prompt: prompt.current,
-        strength: 0.5,
+        strength: 0.6,
         guidance_scale: 1,
         seed: 42,
         num_inference_steps: 3,
