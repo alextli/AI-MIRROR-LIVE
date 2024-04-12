@@ -34,7 +34,7 @@ function WebcamCapture({prompt}) {
         strength: .7,
         guidance_scale: 1,
         seed: 1000,
-        num_inference_steps: 3,
+        num_inference_steps: 1,
         sync_mode: 1,
         negative_prompt: "deformed, ugly, blurry, low resolution",
         enable_safety_checks: false,
@@ -42,7 +42,7 @@ function WebcamCapture({prompt}) {
     }, 150); // Changed to 1000 for 1 second interval
     // Clear the interval when the component is unmounted
     return () => clearInterval(intervalId);
-  }, []); // Removed image from dependency array
+  }, [connection, prompt]); // Removed image from dependency array
   
   console.log(image)
   return(
@@ -57,7 +57,7 @@ function WebcamCapture({prompt}) {
         ref={webcamRef}  
         className="mirrored-image"
         forceScreenshotSourceSize
-        videoConstraints={{width: 600, height: 600}} 
+        videoConstraints={{width: 512, height: 512}} 
         screenshotFormat="image/jpeg"
         style={{position: "absolute", top: "0", right: "0", width: "200px", height: "150px", zIndex: 3}} /> 
     </div>
