@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 function ArtStylesComponent({ setPrompt }) {
-  const defaultPrompt = 'Nature Landscape, Edo Period Hokusai Woodblock Painting with waves & cherry blossoms';
+  const defaultPrompt = 'angular colorful cubist picasso painting';
   const [inputValue, setInputValue] = useState(defaultPrompt);
 
   useEffect(() => {
