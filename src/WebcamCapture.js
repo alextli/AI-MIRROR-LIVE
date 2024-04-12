@@ -34,9 +34,9 @@ function WebcamCapture({prompt}) {
         strength: .7,
         guidance_scale: 1,
         seed: 1000,
-        num_inference_steps: 1,
+        num_inference_steps: 3,
         sync_mode: 1,
-        negative_prompt: "deformed, ugly, blurry, low resolution",
+        negative_prompt: "person, deformed, ugly, blurry, low resolution",
         enable_safety_checks: false,
       });
     }, 150); // Changed to 1000 for 1 second interval
