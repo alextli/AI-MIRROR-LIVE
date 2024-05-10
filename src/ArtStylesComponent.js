@@ -3,10 +3,27 @@ import React, { useState, useEffect } from 'react';
 function ArtStylesComponent({ setPrompt }) {
   const defaultPrompt = 'angular colorful cubist picasso painting';
   const [inputValue, setInputValue] = useState(defaultPrompt);
+  const [isVisible, setIsVisible] = useState(true);
+  let mouseMovementTimeout;
 
   useEffect(() => {
     // Automatically set the default prompt as active when the component mounts
     setPrompt.current = defaultPrompt;
+
+    const handleMouseMovement = () => {
+      setIsVisible(true);
+      clearTimeout(mouseMovementTimeout);
+      mouseMovementTimeout = setTimeout(() => {
+        setIsVisible(false);
+      }, 3000); // Hide after 3 seconds of no mouse movement
+    };
+
+    document.addEventListener('mousemove', handleMouseMovement);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMovement);
+      clearTimeout(mouseMovementTimeout);
+    };
   }, [setPrompt]);
 
   const handleInputChange = (event) => {
@@ -41,6 +58,7 @@ function ArtStylesComponent({ setPrompt }) {
             borderRadius: '10px',
             backgroundColor: 'transparent',
             color: 'white',
+            visibility: isVisible ? 'visible' : 'hidden'
           }}
         />
         <button
@@ -56,6 +74,7 @@ function ArtStylesComponent({ setPrompt }) {
             borderRadius: '10px',
             backgroundColor: 'transparent',
             color: 'white',
+            visibility: isVisible ? 'visible' : 'hidden'
           }}
         >
           GO

@@ -26,17 +26,20 @@ function WebcamCapture({prompt}) {
   });
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const imageSrc = webcamRef.current.getScreenshot();
+      const imageSrc = webcamRef.current.getScreenshot({
+        width: 512, // Lower resolution
+        height: 512,
+      });      
       console.log(imageSrc);
       connection.send({
         image_url: imageSrc,
         prompt: prompt.current,
-        strength: .6,
+        strength: 0.6,
         guidance_scale: 1,
         seed: 1000,
-        num_inference_steps: 3,
+        num_inference_steps: 2,
         sync_mode: 1,
-        negative_prompt: "person, deformed, ugly, blurry, low resolution",
+        negative_prompt: "deformed, ugly, blurry, low resolution",
         enable_safety_checks: false,
       });
     }, 150); // Changed to 1000 for 1 second interval
@@ -59,7 +62,7 @@ function WebcamCapture({prompt}) {
         forceScreenshotSourceSize
         videoConstraints={{width: 512, height: 512}} 
         screenshotFormat="image/jpeg"
-        style={{position: "absolute", top: "0", right: "0", width: "200px", height: "150px", zIndex: 3}} /> 
+        style={{position: "absolute", top: "0", right: "0", width: "200px", height: "150px", zIndex: 3, visibility: "hidden"}} /> 
     </div>
       );
     }
