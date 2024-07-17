@@ -9,7 +9,7 @@ function WebcamCapture({prompt}) {
   fal.config({
     // Can also be auto-configured using environment variables:
     // Either a single FAL_KEY or a combination of FAL_KEY_ID and FAL_KEY_SECRET
-    credentials: `84bf17d7-ed75-4782-a608-a7a165cf59e2:af97d58be14f1cb3fb1ec0b5917edd83`,
+    credentials: `af4af4e0-e341-46f3-b081-e8ab5982a7d5:ada4b0d3223b304b8136c7c925101289`,
   });
   const connection = fal.realtime.connect("110602490-lcm-sd15-i2i", {
     clientonly:false,
@@ -30,7 +30,6 @@ function WebcamCapture({prompt}) {
         width: 512, // Lower resolution
         height: 512,
       });      
-      console.log(imageSrc);
       connection.send({
         image_url: imageSrc,
         prompt: prompt.current,
@@ -47,7 +46,6 @@ function WebcamCapture({prompt}) {
     return () => clearInterval(intervalId);
   }, [connection, prompt]); // Removed image from dependency array
   
-  console.log(image)
   return(
     <div>
       <img 
@@ -62,7 +60,7 @@ function WebcamCapture({prompt}) {
         forceScreenshotSourceSize
         videoConstraints={{width: 512, height: 512}} 
         screenshotFormat="image/jpeg"
-        style={{position: "absolute", top: "0", right: "0", width: "200px", height: "150px", zIndex: 3, visibility: "hidden"}} /> 
+        style={{position: "absolute", top: "0", right: "0", width: "200px", height: "150px", zIndex: 3}} /> 
     </div>
       );
     }
